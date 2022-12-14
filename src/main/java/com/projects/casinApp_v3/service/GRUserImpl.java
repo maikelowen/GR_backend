@@ -4,21 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.projects.casinApp_v3.dto.CheckUserResponse;
 import com.projects.casinApp_v3.dto.LoginResponse;
 import com.projects.casinApp_v3.model.GRUser;
-import com.projects.casinApp_v3.model.GRWallet;
 import com.projects.casinApp_v3.model.User;
 import com.projects.casinApp_v3.repository.GRUserRepository;
 import com.projects.casinApp_v3.repository.GRWalletRepository;
 import com.projects.casinApp_v3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GRUserImpl {
@@ -48,7 +42,6 @@ public class GRUserImpl {
     //Method that receive param username and returns OnlineHash
     public String getURL(String username) throws JsonProcessingException {
 
-        String grURL= "test call";
         System.out.println("getURL starts...");
 
         //Check if USER exists in DB by username.
@@ -219,6 +212,7 @@ public class GRUserImpl {
         headers.add("apiId", apiId);
         headers.add("apiHash", apiHash);
         headers.add("apiDomain", apiDomain);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = new HttpEntity<Object>(headers);
         return entity;
     }

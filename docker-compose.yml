@@ -1,25 +1,22 @@
 version: "3"
 services:
-  server:
+  casino_app:
+    container_name: casino_container_v1
     image: casino_app
+    restart: always
+    build: .
     ports:
-      - "8080:8080"
+      - 8080:8080
     environment:
-      - spring.datasource.url=jdbc:mysql://127.0.0.1:3306/casino_db?useSSL=false
-    networks:
-      - casino_network
-    depends_on:
-      - mysql_container
-
-  mysql_container:
+      MYSQL_HOST: mysql_container_v1
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mpfrbb
+      MYSQL_PORT: 3306
+  mysql_container_v1:
+    container_name: mysql_container_v1
     image: mysql:latest
-    networks:
-      - casino_network
+    ports:
+      - 3307:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=mpfrbb
-      - MYSQL_DATABASE=casino_db
-      - MYSQL_USER=mysqluser
-      - MYSQL_PASSWORD=mpfrbb
-
-networks:
-  casino_network:
+      MYSQL_DATABASE: mysqluser
+      MYSQL_ROOT_PASSWORD: mpfrbb
