@@ -1,15 +1,10 @@
 package com.projects.casinApp_v3.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.projects.casinApp_v3.model.User;
 import com.projects.casinApp_v3.service.GRUserImpl;
-import com.projects.casinApp_v3.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/gr")
@@ -19,11 +14,14 @@ public class GoldenRaceUserController {
     @Autowired
     GRUserImpl grUser;
 
+    //Endpoint that receive an entityName and returns onlineHash
     @GetMapping("/get-url")
     @ResponseBody
     public String getURL(@RequestParam String entityName) throws JsonProcessingException {
-        return grUser.getURL(entityName);
+        return grUser.getOnlineHash(entityName);
     }
+
+    //Endpoints created only for testing services. Not needed for the application.
 
     @GetMapping("/find")
     @ResponseBody

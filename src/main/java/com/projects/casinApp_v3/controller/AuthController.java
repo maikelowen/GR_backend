@@ -7,7 +7,6 @@ import com.projects.casinApp_v3.model.ERole;
 import com.projects.casinApp_v3.model.Role;
 import com.projects.casinApp_v3.model.Session;
 import com.projects.casinApp_v3.model.User;
-import com.projects.casinApp_v3.repository.GRWalletRepository;
 import com.projects.casinApp_v3.repository.RoleRepository;
 import com.projects.casinApp_v3.repository.SessionRepository;
 import com.projects.casinApp_v3.repository.UserRepository;
@@ -70,7 +69,7 @@ public class AuthController {
         String jwt = jwtUtil.generateJwtToken(authentication);
         //Get UserDetail object from Principal
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        //Get list of roles from authorithies and convert them to String List
+        //Get list of roles from authorities and convert them to String List
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());

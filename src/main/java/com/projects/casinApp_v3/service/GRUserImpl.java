@@ -6,7 +6,7 @@ import com.projects.casinApp_v3.dto.LoginResponse;
 import com.projects.casinApp_v3.model.GRUser;
 import com.projects.casinApp_v3.model.User;
 import com.projects.casinApp_v3.repository.GRUserRepository;
-import com.projects.casinApp_v3.repository.GRWalletRepository;
+
 import com.projects.casinApp_v3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -18,9 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GRUserImpl {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private GRWalletRepository grWalletRepository;
-
     @Autowired
     private GRUserRepository grUserRepository;
     @Autowired
@@ -38,9 +35,8 @@ public class GRUserImpl {
     private boolean existUser = false;
     private boolean addedUser = false;
 
-
-    //Method that receive param username and returns OnlineHash
-    public String getURL(String username) throws JsonProcessingException {
+    //Method that receive username and returns OnlineHash
+    public String getOnlineHash(String username) throws JsonProcessingException {
 
         System.out.println("getURL starts...");
 
@@ -87,7 +83,7 @@ public class GRUserImpl {
         return  onlineHash;
     }
 
-    //Method that receive an extId and returns true if user exists in GR
+    //Method that receive an extId and returns true if user exists in GR System
     public boolean checkUser (int extId) throws JsonProcessingException {
         boolean isUser = false;
 
@@ -102,49 +98,53 @@ public class GRUserImpl {
         //Initiating ObjectMapper object
         ObjectMapper mapper = new ObjectMapper();
         //If response's body is not null
-        if(response.getBody()!=null){
+        if (response.getStatusCode() == HttpStatus.OK) {
             //Map response to CheckUserResponse DTO
             CheckUserResponse checkUserResponse = mapper.readValue(response.getBody(), CheckUserResponse.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                System.out.println("Request Successful.");
-                System.out.println(response.getBody());
-                isUser = true;
-                grId = checkUserResponse.getId();
-                parentId = checkUserResponse.getParentId();
-                entityName = checkUserResponse.getName();
-                setGRUser(entityName, grId, extId);
-                try {
-                    grWalletService.checkWallet((long) grId, extId);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
+            System.out.println("Request Successful.");
+            System.out.println(response.getBody());
+            //Set isUser to true
+            isUser = true;
+            //Get values from response
+            grId = checkUserResponse.getId();
+            parentId = checkUserResponse.getParentId();
+            entityName = checkUserResponse.getName();
+            setGRUser(entityName, grId, extId);
+            //Check if wallet exists in GR System
+            try {
+                grWalletService.checkWallet((long) grId, extId);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            else {
-                System.out.println("Request Failed");
-                System.out.println(response.getStatusCode());
-                isUser = false;
+        } else {
+            System.out.println("Request Failed");
+            System.out.println(response.getStatusCode());
+            //Set isUser to false
+            isUser = false;
             }
-        }
-
-
         return isUser;
     }
 
+    //Method to add user in GR System
     public ResponseEntity<String> addUser (int parentId, String entityName, int extId) throws JsonProcessingException {
+        //Add headers
         HttpEntity<Object> entity = addHeaders();
-
+        //Set url
         String url = "https://api-int.virtustec.com:8383/api/external/v2/entity/add?entityParentId="+parentId+"&entityName="+entityName+"&extId="+extId+"&client=true&status=ENABLED&profiles=External";
+        //Initialize RestTemplate object
         RestTemplate restTemplate = new RestTemplate();
+        //Send request and keep the response
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
+        //Initialize ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
+        //Map response to CheckUserResponse DTO
         CheckUserResponse checkUserResponse = mapper.readValue(response.getBody(), CheckUserResponse.class);
-
+        //If response status code is OK...
         if (response.getStatusCode() == HttpStatus.OK) {
             System.out.println("Request Successful.");
             System.out.println(response.getBody());
             System.out.println("User created!");
+            //Get GR User values and set object
             grId = checkUserResponse.getId();
             parentId = checkUserResponse.getParentId();
             entityName = checkUserResponse.getName();
@@ -157,22 +157,25 @@ public class GRUserImpl {
         return response;
     }
 
+    //Method to log user in GR System. Receive playerID (GR ID) and returns the reponse.
     public ResponseEntity<String> loginUser(int playerId ) throws JsonProcessingException {
-
-
+        //Add headers
         HttpEntity<Object> entity = addHeaders();
-
+        //Set url
         String url = "https://api-int.virtustec.com:8383/api/external/v2/session/login?accountId="+playerId+"&userId="+playerId;
+        //Initialize RestTemplate object
         RestTemplate restTemplate = new RestTemplate();
+        //Send request and keep the response
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
+        //Initialize ObjectMapper
         ObjectMapper mapper = new ObjectMapper();
+        //Map response to LoginResponse DTO
         LoginResponse loginResponse = mapper.readValue(response.getBody(), LoginResponse.class);
-
+        //If response status code is Ok...
         if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Request Successful.");
             System.out.println(response.getBody());
             System.out.println("Logging Successful!");
+            //Set OnlineHas
             onlineHash = loginResponse.getOnlineHash();
         } else {
             System.out.println("Request Failed");
@@ -183,7 +186,7 @@ public class GRUserImpl {
     }
 
 
-    // Util Functions
+    // Helper Functions
     public void setGRUser (String username, int grId, int extId){
     try {
         if(!grUserExist(grId)){

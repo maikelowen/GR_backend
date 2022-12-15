@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
 
+    //Endpoints for testing roles based content access. Not needed for the application
+
     @GetMapping("/all")
     public String allAccess() {
         return "Public Content.";

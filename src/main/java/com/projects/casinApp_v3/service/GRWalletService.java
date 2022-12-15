@@ -9,7 +9,6 @@ import com.projects.casinApp_v3.model.GRUser;
 import com.projects.casinApp_v3.model.GRWallet;
 import com.projects.casinApp_v3.repository.GRUserRepository;
 import com.projects.casinApp_v3.repository.GRWalletRepository;
-import com.projects.casinApp_v3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Optional;
 
 @Service
 public class GRWalletService {
@@ -27,24 +25,16 @@ public class GRWalletService {
     private Long gr_wallet_id;
     private int extId;
 
-    private BigDecimal credit;
-
     private final String apiId = "49985";
     private final String apiHash = "7ab19f172abe51a34c2bfa4f313ccf2e";
     private final String apiDomain = "Test";
-
-    @Autowired
-    private UserRepository userRepository;
-
     @Autowired
     private GRWalletRepository grWalletRepository;
-
     @Autowired
     private GRUserRepository grUserRepository;
 
-
+    //Method that receive credit and username and returns http response
     public ResponseEntity<String> addCredit(BigDecimal credit, String username) {
-
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
         try {
             System.out.println("Trying to find Wallet from username: "+ username);
@@ -68,10 +58,10 @@ public class GRWalletService {
         }catch (Exception e){
             e.printStackTrace();
         }
-
         return response;
     }
 
+    // Method that check if wallet exists in GR System. Receive grId and extId and returns response.
     public ResponseEntity<String> checkWallet(Long grId, int extId) throws JsonProcessingException {
         this.grId = grId;
         this.extId = extId;
@@ -118,7 +108,7 @@ public class GRWalletService {
     }
 
 
-
+    // Method to create wallet in GR System. Receive grId and extId and returns response.
     public ResponseEntity <String>createWallet(Long grId, int extId) throws JsonProcessingException {
         //Initialize credit to 0. Only to create the wallet.
         BigDecimal credit = BigDecimal.valueOf(0);
@@ -159,7 +149,7 @@ public class GRWalletService {
     }
 
 
-    //Utils Functions
+    //Helper Functions
 
     //Check if wallet exists in DB by gr_wallet_id. Returns boolean.
     public boolean walletExist (Long gr_wallet_id){

@@ -25,6 +25,7 @@ public class SecurityConfiguration {
     private AuthEntryPointJwt authEntryPointJwt;
     private AuthTokenFilter authTokenFilter;
 
+    //Constructor
     public SecurityConfiguration(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt authEntryPointJwt, AuthTokenFilter authTokenFilter) {
         this.userDetailsService = userDetailsService;
         this.authEntryPointJwt = authEntryPointJwt;
@@ -37,12 +38,12 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    // AuthenticationManager
+    // Manages the authentication modules that an application uses
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-    //AuthenticationManagerBuilder
+    //Helps to set up the UserDetailService in order to build an AuthenticationManager.
     @Bean
     @Primary
     public AuthenticationManagerBuilder configureAuthenticationManagerBuilder(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -50,7 +51,7 @@ public class SecurityConfiguration {
         return authenticationManagerBuilder;
     }
 
-    //SecurityFilterChain rules to authenticate the requests
+    //SecurityFilterChain rules to authenticate incoming requests
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()

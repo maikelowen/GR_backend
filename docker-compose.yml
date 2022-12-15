@@ -1,19 +1,19 @@
 version: "3"
 services:
   casino_app:
-    container_name: casino_container_v1
+    container_name: casino_container
     image: casino_app
     restart: always
     build: .
     ports:
-      - 8080:8080
+      - 9090:8080
     environment:
-      MYSQL_HOST: mysql_container_v1
+      MYSQL_HOST: mysqldb
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: mpfrbb
       MYSQL_PORT: 3306
-  mysql_container_v1:
-    container_name: mysql_container_v1
+  mysqldb:
+    container_name: mysqldb
     image: mysql:latest
     ports:
       - 3307:3306

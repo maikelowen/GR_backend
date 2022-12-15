@@ -29,7 +29,6 @@ public class User {
     private int extId;
 
 
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_to_roles",
             joinColumns = @JoinColumn(name="user_id"),
